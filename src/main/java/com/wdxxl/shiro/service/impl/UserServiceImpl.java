@@ -1,9 +1,5 @@
 package com.wdxxl.shiro.service.impl;
 
-import com.wdxxl.shiro.exception.LoginException;
-import com.wdxxl.shiro.exception.RegisterException;
-import com.wdxxl.shiro.service.UserService;
-import java.util.Map;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -14,6 +10,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.wdxxl.shiro.dao.UserDao;
+import com.wdxxl.shiro.exception.LoginException;
+import com.wdxxl.shiro.exception.RegisterException;
+import com.wdxxl.shiro.service.UserService;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -25,6 +28,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private PasswordService passwordService;
+    
+    @Autowired
+    private UserDao userDao;
 
     @Override
     public void login(String username, String password, boolean isRememberMe) throws LoginException {
@@ -32,7 +38,6 @@ public class UserServiceImpl implements UserService {
         UsernamePasswordToken token = new UsernamePasswordToken(username, password);
         token.setRememberMe(isRememberMe);
 
-        // 获取当前用户，并进行登录操作
         Subject user = SecurityUtils.getSubject();
         try {
             user.login(token);
@@ -43,22 +48,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void register(Map<String, String> fieldMap) throws RegisterException {
-        String username = fieldMap.get("username");
-        String password = fieldMap.get("password");
-
+    @Transactional(propagation=Propagation.REQUIRED)
+    public long register(String username, String password) throws RegisterException {
         // 在 user 表中根据 username 查询用户是否已存在
-        String selectSQL = "select count(*) from user where username = ?";
-        Long userCount = jdbcTemplate.queryForObject(selectSQL, Long.class, username);
+        Long userCount = userDao.userExist(username);
         if (userCount > 0) {
             throw new RegisterException();
         }
-
-        // 加密密码
-        password = passwordService.encryptPassword(password);
-
-        // 插入 user 表
-        String insertSQL = "insert into user (username, password) values (?, ?)";
-        jdbcTemplate.update(insertSQL, username, password);
+        
+        long registedUserId = userDao.register(username, passwordService.encryptPassword(password));
+        
+    	//从主键持有者中获得主键值
+    	return registedUserId;
     }
 }

@@ -16,19 +16,69 @@
     <![endif]-->
     <script src="<c:url value='/resources/vendor/modernizr-2.6.2-respond-1.1.0.min.js'/>"></script>
   </head>
-  <body id="login">
+  <body>
 	<div class="container">
 		<shiro:guest>
-		<form class="form-signin" action="<c:url value="/register"/>" method="post">
-			<h2 class="form-signin-heading">Please Register</h2>
-			<input type="text" name="username" class="input-block-level" placeholder="Username">
-			<input type="password" name="password" class="input-block-level" placeholder="Password">
-			<input type="password" name="password" class="input-block-level" placeholder="Again Password">
-	        <button class="btn btn-large btn-primary" type="submit">Register</button>
-		</form>
-	    <c:if test="${requestScope['exception'] == 'RegisterException'}">
-	        <p>注册失败：用户已存在！</p>
-	    </c:if>
+			<!-- validation -->
+            <div class="row-fluid">
+				<!-- block -->
+				<div class="block">
+					<div class="navbar navbar-inner block-header">
+						<div class="muted pull-left">Form Validation</div>
+					</div>
+					<div class="block-content collapse in">
+						<div class="span12">
+							<!-- BEGIN FORM-->
+							<form  id="form_sample_1" class="form-horizontal" action="<c:url value="/register"/>" method="post">
+								<fieldset>
+									<c:if test="${requestScope['exception'] == 'RegisterException'}">
+								   		<div class="alert">
+											<button class="close" data-dismiss="alert">&times;</button>
+											<strong>Warning!</strong> 注册失败：用户已存在！
+										</div>
+								    </c:if>
+									<div class="alert alert-error hide">
+										<button class="close" data-dismiss="alert"></button>
+										You have some form errors. Please check below.
+									</div>
+									<div class="alert alert-success hide">
+										<button class="close" data-dismiss="alert"></button>
+										Your form validation is successful!
+									</div>
+		 							<div class="control-group">
+		 								<label class="control-label">User Name<span class="required">*</span></label>
+		 								<div class="controls">
+		 									<input type="text" name="username" data-required="1" class="span6 m-wrap" placeholder="Username">
+		 								</div>
+		 							</div>
+		 							<div class="control-group">
+		 								<label class="control-label">Password<span class="required">*</span></label>
+		 								<div class="controls">
+		 									<input type="password" name="password" class="span6 m-wrap" placeholder="Password">
+		 								</div>
+		 							</div>
+		 							<div class="control-group">
+		 								<label class="control-label">Category<span class="required">*</span></label>
+		 								<div class="controls">
+		 									<select class="span6 m-wrap" name="category">
+		 										<option value="">Select...</option>
+		 										<option value="Category 1">Category 1</option>
+		 										<option value="Category 2">Category 2</option>
+		 										<option value="Category 3">Category 5</option>
+		 										<option value="Category 4">Category 4</option>
+		 									</select>
+		 								</div>
+		 							</div>
+		 							<div class="form-actions">
+		 								<button type="submit" class="btn btn-primary">Validate</button>
+		 								<button type="button" class="btn">Cancel</button>
+		 							</div>
+								</fieldset>
+							</form><!-- END FORM-->
+						</div>
+			    	</div>
+				</div><!-- /block -->
+		    </div><!-- /validation -->
 		</shiro:guest>
 
 		<shiro:user>
@@ -38,5 +88,12 @@
 	
     <script src="<c:url value='/resources/vendors/jquery-1.9.1.min.js'/>"></script>
     <script src="<c:url value='/resources/bootstrap/js/bootstrap.min.js'/>"></script>
+	<script src="<c:url value='/resources/vendors/jquery-validation/dist/jquery.validate.min.js'/>"></script>
+	<script src="<c:url value='/resources/assets/form-validation.js'/>"></script>
+	<script>
+	jQuery(document).ready(function() {   
+	   FormValidation.init();
+	});
+	</script>
   </body>
 </html>

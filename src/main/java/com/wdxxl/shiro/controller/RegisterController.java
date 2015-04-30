@@ -28,14 +28,9 @@ public class RegisterController {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        // 封装注册服务所需的字段
-        Map<String, String> fieldMap = new HashMap<String, String>();
-        fieldMap.put("username", username);
-        fieldMap.put("password", password);
-
         // 调用注册服务
         try {
-            userService.register(fieldMap);
+            userService.register(username,password);
         } catch (RegisterException e) {
             request.setAttribute("exception", e.getName());
             return index();
