@@ -1,6 +1,7 @@
 <%@ page pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <!DOCTYPE html>
 <html>
@@ -37,14 +38,7 @@
 											<strong>Warning!</strong> 注册失败：用户已存在！
 										</div>
 								    </c:if>
-									<div class="alert alert-error hide">
-										<button class="close" data-dismiss="alert"></button>
-										You have some form errors. Please check below.
-									</div>
-									<div class="alert alert-success hide">
-										<button class="close" data-dismiss="alert"></button>
-										Your form validation is successful!
-									</div>
+								    <div class="error"></div>
 		 							<div class="control-group">
 		 								<label class="control-label">User Name<span class="required">*</span></label>
 		 								<div class="controls">
@@ -58,15 +52,18 @@
 		 								</div>
 		 							</div>
 		 							<div class="control-group">
-		 								<label class="control-label">Category<span class="required">*</span></label>
+		 								<label class="control-label">Confirm Password<span class="required">*</span></label>
 		 								<div class="controls">
-		 									<select class="span6 m-wrap" name="category">
-		 										<option value="">Select...</option>
-		 										<option value="Category 1">Category 1</option>
-		 										<option value="Category 2">Category 2</option>
-		 										<option value="Category 3">Category 5</option>
-		 										<option value="Category 4">Category 4</option>
-		 									</select>
+		 									<input type="password" name="confirm_password" class="span6 m-wrap" placeholder="Confirm Password">
+		 								</div>
+		 							</div>
+		 							<div class="control-group">
+		 								<label class="control-label">Role<span class="required">*</span></label>
+		 								<div class="controls">
+		 									<form:select class="span6 m-wrap" path="roleList">
+												<form:option value="NONE" label="--- Select ---" />
+												<form:options items="${roleList}" />
+     										</form:select>
 		 								</div>
 		 							</div>
 		 							<div class="form-actions">
@@ -89,11 +86,44 @@
     <script src="<c:url value='/resources/vendors/jquery-1.9.1.min.js'/>"></script>
     <script src="<c:url value='/resources/bootstrap/js/bootstrap.min.js'/>"></script>
 	<script src="<c:url value='/resources/vendors/jquery-validation/dist/jquery.validate.min.js'/>"></script>
-	<script src="<c:url value='/resources/assets/form-validation.js'/>"></script>
 	<script>
-	jQuery(document).ready(function() {   
-	   FormValidation.init();
-	});
+	$().ready(function() {
+		 $("#form_sample_1").validate({
+			    rules: {
+			    	username: {
+		                required: true,
+		                rangelength: [5,10]
+		            },
+		            password: {
+		                required: true,
+		                minlength: 5
+		            },
+		            confirm_password: {
+		                required: true,
+		                minlength: 5,
+		                equalTo: "#password"
+		            }
+		        },
+		        messages: {
+		        	username: {
+			            required: "没有填写用户名",
+			            rangelength: jQuery.format("用户名长度范围在{0}到{1}个字符之间")
+			        },
+		            password: {
+		                required: "没有填写密码",
+		                minlength: jQuery.format("密码不能小于{0}个字符")
+		            },
+		            confirm_password: {
+		                required: "没有确认密码",
+		                minlength: "确认密码不能小于{0}个字符",
+		                equalTo: "两次输入密码不一致嘛"
+		            }
+		        },
+		        submitHandler:function(form){
+		            form.submit();
+		        }    
+		    });
+		});
 	</script>
   </body>
 </html>
